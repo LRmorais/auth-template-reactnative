@@ -1,20 +1,5 @@
-// export function signIn(data) {
-//   console.log(data);
-//   return new Promise(resolve => {
-//     setTimeout(() => {
-//       resolve({
-//         token: 'jdiijdsiad',
-//         user: {
-//           name: 'lucas',
-//           email: 'lucas@gmail.com',
-//         },
-//       });
-//     }, 2000);
-//   });
-// }
-
-import axios from 'axios';
-import {saveData, getData, removeValue} from '../helpers/Storage';
+import {getData, saveDataStr} from '../helpers/Storage';
+import api from './api';
 
 const baseUrl = process.env.REACT_APP_API_URL;
 
@@ -22,12 +7,14 @@ export const isAuthenticated = () => getData('TOKEN_KEY') !== null;
 
 export const signIn = async credencias => {
   try {
-    const url = 'https://reqres.in/api/login';
+    const url = 'api/login';
     const body = credencias;
 
-    const res = await axios.post(url, body);
+    const res = await api.post(url, body);
 
-    // saveData('TOKEN_KEY', res.data?.token);
+    saveDataStr('TOKEN_KEY', res.data?.token);
+    // todas as requisições posteriores incluiram o token
+    api.defaults.headers.Authorization = `Bearer ${res.data.token}`;
     // saveData('USER_KEY', res.data?.user);
 
     return res.data;
@@ -37,10 +24,4 @@ export const signIn = async credencias => {
     }
     return {error: 'Ocorreu algum erro. '};
   }
-};
-
-export const logout = () => {
-  removeValue('USER_KEY');
-  removeValue('TOKEN_KEY');
-  // history.replace('/');
 };

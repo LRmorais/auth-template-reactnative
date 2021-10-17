@@ -1,37 +1,19 @@
-/* eslint-disable no-sparse-arrays */
-import React, {useState} from 'react';
-import {View, Button, StyleSheet, ActivityIndicator, Alert} from 'react-native';
-import {signIn} from '../../services/auth';
+import React, {useState, useContext} from 'react';
+import {View, Button, StyleSheet, ActivityIndicator} from 'react-native';
+import {useAuth} from '../../contexts/auth';
 
 const styles = StyleSheet.create({
   container: {flex: 1, justifyContent: 'center'},
 });
 
 const SignIn = () => {
-  const [loading, setLoading] = useState(false);
-  async function handleSignIn() {
-    // pegar aqui os dados do usuario e enviar para a api
-    setLoading(true);
-    const goLogin = async () => {
-      return signIn({email: 'eve.holt@reqres.in', password: 'cityslicka'});
-    };
+  const {login, loading} = useAuth();
 
-    goLogin().then(r => {
-      if (r.error) {
-        setLoading(false);
-        Alert.alert(
-          'Algum erro ocorreu',
-          'Tente novamente ou entre em contato',
-          [{text: 'OK', onPress: () => console.log('OK Pressed')}, ,],
-        );
-      } else {
-        setLoading(false);
-        Alert.alert('Login feito', 'Sucesso', [
-          {text: 'OK', onPress: () => console.log('OK Pressed')},
-          ,
-        ]);
-      }
-    });
+  const [email, setEmail] = useState('eve.holt@reqres.in');
+  const [password, setPassword] = useState('cityslicka');
+
+  function handleSignIn() {
+    login(email, password);
   }
 
   return (
